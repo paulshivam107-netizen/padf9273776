@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Pick one ♡</title>
+<style>
+:root{--pink:#e75480;--soft:#ffe4ee;--bg:#fff6f9;--ink:#4a2a36}
+*{box-sizing:border-box}
+body{margin:0;font-family:ui-rounded,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh}
+main{max-width:520px;margin:0 auto;padding:16px 16px 24px}
+h1{font-size:22px;margin:4px 0 2px;text-align:center}
+.sub{text-align:center;font-size:13px;opacity:.7;margin:0 0 12px}
+.round{text-align:center;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pink);margin:0}
+.bar{display:flex;align-items:center;gap:10px;font-size:13px}
+.track{flex:1;height:8px;background:var(--soft);border-radius:8px;overflow:hidden}
+.fill{height:100%;background:var(--pink);border-radius:8px;transition:width .25s}
+button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
+#undo{color:var(--pink);padding:6px 4px;font-weight:600}
+#undo:disabled{opacity:.3}
+.solo,.opt{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px #e7548018;display:flex;flex-direction:column}
+.solo{margin-top:14px}
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.car{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.car::-webkit-scrollbar{display:none}
+.car img{flex:0 0 100%;width:100%;aspect-ratio:4/5;object-fit:cover;scroll-snap-align:center;background:var(--soft);display:block}
+.count{font-size:11px;text-align:center;opacity:.6;padding:4px 0 0}
+.pick{margin:8px;padding:12px 0;border-radius:12px;background:var(--soft);color:var(--pink);font-weight:700;font-size:16px}
+.pick:active{background:var(--pink);color:#fff}
+.tiers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:10px}
+.tiers .pick{margin:0;padding:14px 0;font-size:15px}
+.tiers .love{background:var(--pink);color:#fff}
+.tiers .meh{color:var(--ink);background:#f6eef1}
+.hint{text-align:center;font-size:12px;opacity:.6;margin-top:12px}
+#zoom{position:fixed;inset:0;background:#fff;z-index:9;display:none;flex-direction:column}
+#zoom.on{display:flex}
+#zoom .car{flex:1;align-items:center}
+#zoom .car img{aspect-ratio:auto;height:100%;object-fit:contain;background:#fff}
+#zoom .x{position:absolute;top:max(12px,env(safe-area-inset-top));right:12px;background:var(--soft);color:var(--pink);border-radius:20px;padding:8px 14px;font-weight:700;z-index:1}
+#zoom .count{padding:10px 0 max(14px,env(safe-area-inset-bottom))}
+.done{text-align:center;padding-top:12vh}
+.done h1{font-size:30px}
+.code{font:700 28px ui-monospace,Menlo,monospace;letter-spacing:2px;background:#fff;border:2px dashed var(--pink);border-radius:14px;padding:16px 8px;margin:18px 0;user-select:all}
+.btn{display:block;width:100%;padding:14px;border-radius:14px;font-weight:700;font-size:16px;margin-top:10px;text-decoration:none}
+.primary{background:var(--pink);color:#fff}
+.secondary{background:var(--soft);color:var(--pink)}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div id="zoom"><button class="x" aria-label="Close">Close ✕</button><div class="car"></div><div class="count"></div></div>
+<script type="module">
+import { SHOES } from './data.js';
+import { pairs, finalists, encode } from './codec.js';
+
+const FORM_URL = ''; // optional: Formspree / form endpoint to also receive the code
+const KEY = 'pick-one-v2';
+const N = Object.keys(SHOES).length;
+const img = (id, n) => `img/s${id}-${n}.jpg`;
+const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
+let st = load();
+// o1: round-1 order of ids; t: tier given at each round-1 step; o2: round-2 matchups; w: winner at each round-2 step
+if (!st || st.o1?.length !== N) { st = { o1: shuffle(Array.from({ length: N }, (_, k) => k + 1)), t: [], o2: null, w: [] }; save(); }
+
+const app = document.getElementById('app');
+const tiersById = () => { const out = []; st.o1.forEach((id, s) => { out[id - 1] = st.t[s]; }); return out; };
+
+function carousel(id) {
+  return `<div class="car" data-id="${id}">${Array.from({ length: SHOES['s' + id] }, (_, n) =>
+    `<img src="${img(id, n + 1)}" alt="Option photo ${n + 1}" ${n ? 'loading="lazy"' : ''}>`).join('')}</div>`;
+}
+function trackCount(car, out) {
+  const upd = () => { out.textContent = `${Math.round(car.scrollLeft / car.clientWidth) + 1} / ${car.children.length} · swipe for more`; };
+  car.addEventListener('scroll', upd, { passive: true }); upd();
+}
+const preload = (ids) => ids.forEach((id) => [1, 2].forEach((n) => { new Image().src = img(id, n); }));
+const bar = (step, total) => `<div class="bar"><div class="track"><div class="fill" style="width:${step / total * 100}%"></div></div>
+  <span>${step + 1} of ${total}</span><button id="undo" ${st.t.length ? '' : 'disabled'}>↶ Undo</button></div>`;
+const advance = () => { save(); render(); scrollTo(0, 0); };
+const undo = () => { if (st.w.length) st.w.pop(); else { st.t.pop(); st.o2 = null; } advance(); };
+function wire() {
+  app.querySelectorAll('.car').forEach((c) => {
+    trackCount(c, c.parentElement.querySelector('.count'));
+    c.onclick = (e) => e.target.tagName === 'IMG' && zoom(+c.dataset.id, [...c.children].indexOf(e.target));
+  });
+  document.getElementById('undo').onclick = undo;
+}
+
+function render() {
+  const s1 = st.t.length;
+  if (s1 < N) { // round 1: one shoe at a time
+    const id = st.o1[s1];
+    app.innerHTML = `<p class="round">Round 1 of 2</p><h1>Love it or not?</h1><p class="sub">Go with your gut ♡</p>
+      ${bar(s1, N)}
+      <div class="solo">${carousel(id)}<div class="count"></div>
+      <div class="tiers"><button class="pick meh" data-t="2">Not for me</button><button class="pick meh" data-t="1">Maybe</button><button class="pick love" data-t="0">Love it ♡</button></div></div>
+      <p class="hint">Swipe photos · tap a photo to see it bigger</p>`;
+    app.querySelectorAll('.pick').forEach((b) => b.onclick = () => { st.t.push(+b.dataset.t); advance(); });
+    wire();
+    if (s1 + 1 < N) preload([st.o1[s1 + 1]]);
+    return;
+  }
+  const ps = pairs(finalists(tiersById()));
+  if (!st.o2) { st.o2 = shuffle(ps.map((_, k) => ({ k, flip: Math.random() < 0.5 }))); save(); }
+  const s2 = st.w.length;
+  if (s2 === ps.length) return finish(ps);
+  const side = (s) => { const [a, b] = ps[st.o2[s].k]; return st.o2[s].flip ? [b, a] : [a, b]; };
+  app.innerHTML = `<p class="round">Round 2 of 2 · just your favourites</p><h1>Pick one – go with your gut</h1><p class="sub">No wrong answers ♡</p>
+    ${bar(s2, ps.length)}
+    <div class="duel">${side(s2).map((id) => `
+      <div class="opt">${carousel(id)}<div class="count"></div>
+      <button class="pick" data-id="${id}">This one ♡</button></div>`).join('')}</div>
+    <p class="hint">Swipe photos · tap a photo to see it bigger</p>`;
+  app.querySelectorAll('.pick').forEach((b) => b.onclick = () => { st.w.push(+b.dataset.id); advance(); });
+  wire();
+  if (s2 + 1 < ps.length) preload(side(s2 + 1));
+}
+
+const z = document.getElementById('zoom');
+function zoom(id, at) {
+  z.querySelector('.car').outerHTML = carousel(id);
+  const c = z.querySelector('.car');
+  c.querySelectorAll('img').forEach((i) => i.removeAttribute('loading'));
+  z.classList.add('on');
+  c.scrollLeft = at * c.clientWidth;
+  trackCount(c, z.querySelector('.count'));
+}
+z.querySelector('.x').onclick = () => z.classList.remove('on');
+
+function finish(ps) {
+  const byPair = new Array(ps.length);
+  st.o2.forEach(({ k }, s) => { byPair[k] = st.w[s]; });
+  const code = encode(tiersById(), byPair);
+  app.innerHTML = `<div class="done">
+    <h1>All done! ♡</h1><p>Thank you. Send this little code back to me:</p>
+    <div class="code">${code}</div>
+    <button class="btn primary" id="copy">Copy code</button>
+    <a class="btn secondary" href="https://wa.me/?text=${encodeURIComponent('Done! My code: ' + code)}" target="_blank" rel="noopener">Send on WhatsApp</a>
+    <button class="btn" id="undo" style="color:var(--pink)">↶ Undo last pick</button></div>`;
+  document.getElementById('copy').onclick = async (e) => {
+    try { await navigator.clipboard.writeText(code); e.target.textContent = 'Copied ✓'; } catch { e.target.textContent = 'Long-press the code to copy'; }
+  };
+  document.getElementById('undo').onclick = undo;
+  if (FORM_URL && st.sent !== code) fetch(FORM_URL, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) })
+    .then((r) => { if (r.ok) { st.sent = code; save(); } }).catch(() => {});
+}
+
+render();
+</script>
+</body>
+</html>
