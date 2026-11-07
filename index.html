@@ -285,7 +285,7 @@ function render() {
         <span class="flap"></span><span class="wax">${HEART}</span></button></div>
       <p class="tap">tap to open ♡</p>
       <div class="reveal"><h1>A tiny game, just for you</h1>
-      <p>Two quick rounds, no wrong answers. Just go with your gut, my love.</p>
+      <p>Two quick rounds, no wrong answers.</p>
       <button class="cta" id="start">Let's play ${HEART}</button></div></section>`;
     const env = document.getElementById('open');
     env.onclick = () => {
@@ -385,7 +385,7 @@ function finish(ps) {
       <div class="code" id="code">${code}</div><p class="code-note">sealed with a kiss</p></div>
     <button class="cta" id="copy">Copy code</button>
     <a class="cta alt" href="https://wa.me/?text=${encodeURIComponent('Done! ♡ My code: ' + code)}" target="_blank" rel="noopener">Send it on WhatsApp ${HEART}</a>
-    <p class="sign">love you lots,<br>idiot ♡</p>
+    <p class="sign">made with love,<br>by idiot ♡</p>
     <button class="link" id="undo">↶ Undo last pick</button></section>`;
   if (!st.showered) { shower(); st.showered = true; save(); }
   document.getElementById('copy').onclick = async (e) => {
