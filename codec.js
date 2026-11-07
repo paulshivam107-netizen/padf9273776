@@ -1,5 +1,5 @@
 // Shared by the page (encode) and the local decoder. Obfuscation only stops casual peeking; it is not encryption.
-// Round 1: a tier per shoe (0 love, 1 maybe, 2 nope). Round 2: round-robin among finalists.
+// Round 1: a tier per item (0 love, 1 maybe, 2 nope). Round 2: round-robin among finalists.
 const ABC = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'; // Crockford base32
 export const TIERS = ['Love it', 'Maybe', 'Not for me'];
 

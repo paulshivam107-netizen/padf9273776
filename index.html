@@ -5,118 +5,360 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<title>Pick one ♡</title>
+<meta name="theme-color" content="#fde6ee">
+<title>For Ayuuuu ♡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@1,9..144,500..700,100&family=Nunito:wght@500;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <style>
-:root{--pink:#e75480;--soft:#ffe4ee;--bg:#fff6f9;--ink:#4a2a36}
-*{box-sizing:border-box}
-body{margin:0;font-family:ui-rounded,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh}
-main{max-width:520px;margin:0 auto;padding:16px 16px 24px}
-h1{font-size:22px;margin:4px 0 2px;text-align:center}
-.sub{text-align:center;font-size:13px;opacity:.7;margin:0 0 12px}
-.round{text-align:center;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pink);margin:0}
-.bar{display:flex;align-items:center;gap:10px;font-size:13px}
-.track{flex:1;height:8px;background:var(--soft);border-radius:8px;overflow:hidden}
-.fill{height:100%;background:var(--pink);border-radius:8px;transition:width .25s}
-button{font:inherit;border:0;cursor:pointer;color:inherit;background:none}
-#undo{color:var(--pink);padding:6px 4px;font-weight:600}
-#undo:disabled{opacity:.3}
-.solo,.opt{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px #e7548018;display:flex;flex-direction:column}
-.solo{margin-top:14px}
-.duel{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-.car{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+:root{
+  --blush:#fde6ee; --petal:#fbd0de; --rose:#f6a3bf; --pink:#e8457a; --deep:#d22f66; --berry:#7d1d45; --cream:#fffafc;
+  --ink:#4b1830; --soft-ink:#8a5a6d;
+  --serif:'Fraunces',Georgia,serif; --sans:'Nunito',ui-rounded,system-ui,sans-serif; --hand:'Caveat',cursive;
+  --r:28px; --ease:cubic-bezier(.23,1,.32,1); --spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:var(--sans);font-size:16px;color:var(--ink);min-height:100dvh;overflow-x:hidden;background:var(--blush)}
+main{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;
+  padding:max(18px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+button{font:inherit;border:0;cursor:pointer;color:inherit;background:none;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--pink);outline-offset:3px;border-radius:16px}
+svg.h path{fill:currentColor}
+
+/* drifting hearts behind everything */
+.sky{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.sky span{position:absolute;bottom:-40px;color:var(--petal);animation:drift linear infinite}
+.sky span svg{width:100%;height:100%;display:block}
+@keyframes drift{from{transform:translate(0,0) rotate(-10deg)}50%{transform:translate(18px,-55vh) rotate(8deg)}to{transform:translate(-6px,-115vh) rotate(-6deg)}}
+
+/* heading block */
+.head{text-align:center;margin:4px 0 14px}
+.step{font:800 14px var(--sans);color:var(--pink);margin:0 0 4px;display:inline-flex;align-items:center;gap:6px}
+.step svg{width:14px;height:14px}
+h1{font:italic 650 32px/1.05 var(--serif);font-variation-settings:'SOFT' 100;letter-spacing:-.02em;color:var(--berry);margin:0;text-wrap:balance}
+.sub{color:var(--soft-ink);margin:6px 0 0;font-size:15px}
+
+/* progress: hearts on a little ribbon */
+.prog{display:flex;align-items:center;gap:8px;margin:0 0 14px}
+.hearts{flex:1;display:flex;justify-content:center;align-items:center;gap:4px;flex-wrap:wrap;background:var(--cream);border-radius:999px;padding:9px 12px;min-height:40px}
+.hearts svg{width:17px;height:17px;color:var(--petal);transition:color 200ms ease,transform 300ms var(--spring)}
+.hearts svg.on{color:var(--pink)}
+.hearts svg.now{color:var(--rose);transform:scale(1.3)}
+.ribbon{flex:1;height:12px;background:var(--cream);border-radius:12px;overflow:hidden;padding:2px}
+.ribbon i{display:block;height:100%;background:var(--pink);border-radius:12px;transition:transform 350ms var(--ease);transform-origin:left}
+.undo{font-weight:800;font-size:14px;color:var(--berry);padding:11px 13px;border-radius:999px;background:var(--cream);white-space:nowrap;transition:transform 160ms var(--ease),opacity 200ms}
+.undo:active{transform:scale(.97)}
+.undo:disabled{opacity:0;pointer-events:none}
+
+/* photo cards */
+.card{position:relative;background:var(--cream);border-radius:var(--r);overflow:hidden;animation:rise 320ms var(--ease) backwards;
+  transition:transform 200ms var(--ease),opacity 200ms var(--ease)}
+.card.out-0{transform:translateX(38%) rotate(8deg);opacity:0}
+.card.out-1{transform:translateY(28px) scale(.95);opacity:0}
+.card.out-2{transform:translateX(-38%) rotate(-8deg);opacity:0}
+.car{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:var(--petal)}
 .car::-webkit-scrollbar{display:none}
-.car img{flex:0 0 100%;width:100%;aspect-ratio:4/5;object-fit:cover;scroll-snap-align:center;background:var(--soft);display:block}
-.count{font-size:11px;text-align:center;opacity:.6;padding:4px 0 0}
-.pick{margin:8px;padding:12px 0;border-radius:12px;background:var(--soft);color:var(--pink);font-weight:700;font-size:16px}
-.pick:active{background:var(--pink);color:#fff}
-.tiers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:10px}
-.tiers .pick{margin:0;padding:14px 0;font-size:15px}
-.tiers .love{background:var(--pink);color:#fff}
-.tiers .meh{color:var(--ink);background:#f6eef1}
-.hint{text-align:center;font-size:12px;opacity:.6;margin-top:12px}
-#zoom{position:fixed;inset:0;background:#fff;z-index:9;display:none;flex-direction:column}
-#zoom.on{display:flex}
-#zoom .car{flex:1;align-items:center}
-#zoom .car img{aspect-ratio:auto;height:100%;object-fit:contain;background:#fff}
-#zoom .x{position:absolute;top:max(12px,env(safe-area-inset-top));right:12px;background:var(--soft);color:var(--pink);border-radius:20px;padding:8px 14px;font-weight:700;z-index:1}
-#zoom .count{padding:10px 0 max(14px,env(safe-area-inset-bottom))}
-.done{text-align:center;padding-top:12vh}
-.done h1{font-size:30px}
-.code{font:700 28px ui-monospace,Menlo,monospace;letter-spacing:2px;background:#fff;border:2px dashed var(--pink);border-radius:14px;padding:16px 8px;margin:18px 0;user-select:all}
-.btn{display:block;width:100%;padding:14px;border-radius:14px;font-weight:700;font-size:16px;margin-top:10px;text-decoration:none}
-.primary{background:var(--pink);color:#fff}
-.secondary{background:var(--soft);color:var(--pink)}
+.car img{flex:0 0 100%;width:100%;aspect-ratio:4/5;object-fit:cover;scroll-snap-align:center;display:block;cursor:zoom-in}
+.dots{display:flex;justify-content:center;gap:5px;padding:11px 0 3px}
+.dots i{width:6px;height:6px;border-radius:6px;background:var(--petal);transition:transform 250ms var(--ease),background-color 250ms}
+.dots i.on{background:var(--pink);transform:scaleX(2.4);margin:0 5px}
+.pop{position:absolute;left:50%;top:40%;width:120px;height:120px;margin:-60px 0 0 -60px;color:#fff;pointer-events:none;
+  filter:drop-shadow(0 6px 18px rgba(210,47,102,.45));animation:heartpop 600ms var(--spring) forwards}
+.pop svg{width:100%;height:100%}
+@keyframes heartpop{from{opacity:0;transform:scale(.5)}40%{opacity:1;transform:scale(1.1)}to{opacity:0;transform:scale(1.25)}}
+
+/* round 1 */
+.tiers{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px;padding:10px 12px 14px}
+.pill{border-radius:999px;padding:15px 6px;font-weight:800;font-size:15px;transition:transform 160ms var(--ease),background-color 200ms ease}
+.pill:active{transform:scale(.97)}
+.nope{background:var(--blush);color:var(--soft-ink)}
+.maybe{background:var(--petal);color:var(--berry)}
+.love{background:var(--pink);color:#fff;display:flex;align-items:center;justify-content:center;gap:6px}
+.love svg{width:17px;height:17px;animation:beat 1.6s ease-in-out infinite}
+
+/* round 2 */
+.duel{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.duel .card:nth-child(2){animation-delay:70ms}
+.duel .card{display:flex;flex-direction:column}
+.duel .pill{margin:8px 10px 12px;background:var(--petal);color:var(--berry);display:flex;align-items:center;justify-content:center;gap:5px}
+.duel .pill svg{width:15px;height:15px}
+.duel .card.chosen{transform:scale(1.03)}
+.duel .card.chosen .pill{background:var(--pink);color:#fff}
+.duel .card.lost{opacity:.35;transform:scale(.96)}
+@media (hover:hover) and (pointer:fine){.duel .pill:hover{background:var(--rose)}.cta:hover{transform:translateY(-2px)}}
+
+.stage{margin:auto 0}
+.note{margin:0;padding-top:22px;text-align:center;font:600 23px var(--hand);color:var(--rose)}
+
+/* full screens */
+.screen{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center}
+.screen>*{animation:rise 450ms var(--ease) backwards}
+.screen>:nth-child(2){animation-delay:70ms}.screen>:nth-child(3){animation-delay:140ms}.screen>:nth-child(4){animation-delay:210ms}
+.screen>:nth-child(5){animation-delay:280ms}.screen>:nth-child(6){animation-delay:350ms}.screen>:nth-child(7){animation-delay:420ms}
+.screen h1{font-size:40px}
+.screen p{font-size:17px;line-height:1.5;margin:12px auto 0;max-width:30ch}
+.big-heart{width:96px;height:96px;margin:0 auto 18px;color:var(--pink);animation:beat 1.8s ease-in-out infinite}
+.big-heart svg{width:100%;height:100%}
+.loved{display:flex;justify-content:center;gap:6px;margin:16px 0 0;color:var(--pink)}
+.loved svg{width:26px;height:26px;animation:rise 400ms var(--spring) backwards}
+.cta{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:28px;padding:19px;border-radius:999px;background:var(--pink);color:#fff;font-weight:900;font-size:18px;text-decoration:none;transition:transform 160ms var(--ease)}
+.cta:active{transform:scale(.97)}
+.cta svg{width:19px;height:19px}
+.cta.alt{background:var(--cream);color:var(--berry);margin-top:10px}
+.link{margin-top:12px;font-weight:700;color:var(--soft-ink);padding:10px}
+.sign{font:700 32px var(--hand);color:var(--pink);margin:18px auto 0!important;line-height:1.1}
+
+/* the welcome envelope */
+.env-wrap{perspective:900px;margin:10px auto 0;width:min(320px,86vw)}
+.env{position:relative;width:100%;aspect-ratio:1.45;cursor:pointer;display:block;padding:0}
+.env .back{position:absolute;inset:0;background:var(--rose);border-radius:18px;z-index:0}
+.env .letter{position:absolute;left:7%;right:7%;top:8%;bottom:6%;background:var(--cream);border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:14px 10px;gap:2px;z-index:1;
+  transition:transform 700ms var(--ease) 260ms}
+.env .letter b{font:700 30px var(--hand);color:var(--berry);line-height:1}
+.env .letter small{font:600 21px var(--hand);color:var(--pink)}
+.env .front{position:absolute;inset:0;border-radius:18px;background:var(--petal);
+  clip-path:polygon(0 0,50% 52%,100% 0,100% 100%,0 100%);z-index:2}
+.env .to{position:absolute;left:0;right:0;bottom:12%;font:700 28px var(--hand);color:var(--berry);text-align:center;line-height:1;z-index:3}
+.env .flap{position:absolute;left:0;right:0;top:0;height:58%;transform-origin:top;transition:transform 450ms var(--ease);z-index:4}
+.env .flap::before{content:"";position:absolute;inset:0;background:var(--pink);clip-path:polygon(0 0,100% 0,50% 100%);border-radius:18px 18px 0 0}
+.env .wax{position:absolute;left:50%;top:58%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:var(--deep);color:#fff;
+  display:grid;place-items:center;z-index:5;transition:transform 300ms var(--ease),opacity 250ms;animation:beat 1.8s ease-in-out infinite}
+.env .wax svg{width:26px;height:26px}
+.env.open .wax{transform:scale(.6);opacity:0;animation:none}
+.env.open .flap{transform:rotateX(180deg);z-index:0;transition:transform 450ms var(--ease),z-index 0s 200ms}
+.env.open .letter{transform:translateY(-58%)}
+.tap{font:700 25px var(--hand);color:var(--pink);margin-top:16px;animation:bob 1.6s ease-in-out infinite}
+.reveal{display:none}
+.opened .reveal{display:block;animation:rise 450ms var(--ease) backwards}
+.opened .tap{display:none}
+.opened .env-wrap{margin-top:72px}
+
+/* sealed code */
+.envelope{position:relative;background:var(--cream);border-radius:var(--r);padding:92px 18px 22px;margin-top:28px;overflow:hidden}
+.envelope::before{content:"";position:absolute;inset:0 0 auto;height:76px;background:var(--petal);clip-path:polygon(0 0,100% 0,50% 100%)}
+.seal{position:absolute;left:50%;top:44px;width:62px;height:62px;margin-left:-31px;border-radius:50%;background:var(--pink);color:#fff;display:grid;place-items:center;
+  animation:stamp 520ms 450ms var(--spring) backwards}
+.seal svg{width:28px;height:28px}
+.code{font:900 30px var(--sans);font-variant-numeric:tabular-nums;letter-spacing:.08em;color:var(--berry);margin:8px 0 2px;user-select:all;word-break:break-all}
+.code-note{font:700 22px var(--hand);color:var(--rose);margin:0 auto!important}
+
+/* zoom */
+#zoom{position:fixed;inset:0;background:var(--cream);z-index:9;display:none;flex-direction:column}
+#zoom.on{display:flex;animation:fade 200ms both}
+#zoom .car{flex:1;align-items:center;background:var(--cream)}
+#zoom .car img{aspect-ratio:auto;height:100%;object-fit:contain;cursor:default}
+#zoom .x{position:absolute;top:max(14px,env(safe-area-inset-top));right:14px;z-index:1;background:var(--pink);color:#fff;border-radius:999px;padding:11px 18px;font-weight:800}
+#zoom .dots{padding:12px 0 max(18px,env(safe-area-inset-bottom))}
+
+/* little hearts on a pick, and the shower at the end */
+.float{position:fixed;pointer-events:none;z-index:20;color:var(--pink);animation:float 1s var(--ease) backwards}
+.float svg,.fall svg{width:100%;height:100%;display:block}
+.fall{position:fixed;top:-30px;pointer-events:none;z-index:20;animation:fall linear backwards}
+
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes beat{0%,100%{transform:scale(1)}15%{transform:scale(1.12)}30%{transform:scale(1)}45%{transform:scale(1.07)}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes stamp{from{opacity:0;transform:scale(1.8) rotate(-20deg)}to{opacity:1;transform:none}}
+@keyframes float{from{opacity:1;transform:translate(0,0) scale(.6)}to{opacity:0;transform:translate(var(--dx),-150px) scale(1.25) rotate(var(--rot))}}
+@keyframes fall{from{transform:translate(0,0) rotate(0)}to{transform:translate(var(--dx),110vh) rotate(var(--rot))}}
+.float{animation-fill-mode:both}.fall{animation-fill-mode:both}
+@media (prefers-reduced-motion:reduce){
+  *,*::before{animation-name:fade!important;animation-duration:200ms!important;animation-iteration-count:1!important;transition-property:opacity,background-color,color!important}
+  .float,.fall,.sky,.pop{display:none}
+  .card[class*=out-],.duel .card.chosen,.duel .card.lost,.env.open .letter,.env.open .flap{transform:none}
+}
 </style>
 </head>
 <body>
-<main id="app"></main>
-<div id="zoom"><button class="x" aria-label="Close">Close ✕</button><div class="car"></div><div class="count"></div></div>
+<div class="sky" aria-hidden="true"></div>
+<main id="app" aria-live="polite"></main>
+<div id="zoom" role="dialog" aria-label="Photos"><button class="x">Close</button><div class="car"></div><div class="dots"></div></div>
 <script type="module">
-import { SHOES } from './data.js';
+import { PICS } from './data.js';
 import { pairs, finalists, encode } from './codec.js';
 
 const FORM_URL = ''; // optional: Formspree / form endpoint to also receive the code
 const KEY = 'pick-one-v2';
-const N = Object.keys(SHOES).length;
+const NAME = 'Ayuuuu';
+const N = Object.keys(PICS).length;
 const img = (id, n) => `img/s${id}-${n}.jpg`;
+const HEART = '<svg class="h" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.5 3 4.5 6.8 4.5c2.2 0 3.6 1.2 5.2 3 1.6-1.8 3-3 5.2-3 3.8 0 5.9 4 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>';
+// one playful question per round-1 card, by step
+const ASK = ['Love it or not?', 'Would you twirl in these?', 'Date-night worthy?', 'Heart eyes, or nah?', `Yay or nay, ${NAME}?`,
+  'Can you picture these on you?', 'Swoon or skip?', 'Is this your vibe?', 'Would these make you smile?', 'Cute or nah?', 'Last one! Love it?'];
+const NOTES = ['no wrong answers, promise', 'take your time, cutie', 'you have great taste btw', 'made with love, just for you'];
 const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } };
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
 let st = load();
 // o1: round-1 order of ids; t: tier given at each round-1 step; o2: round-2 matchups; w: winner at each round-2 step
+// go: welcome seen; r2: round-2 intro seen
 if (!st || st.o1?.length !== N) { st = { o1: shuffle(Array.from({ length: N }, (_, k) => k + 1)), t: [], o2: null, w: [] }; save(); }
 
 const app = document.getElementById('app');
 const tiersById = () => { const out = []; st.o1.forEach((id, s) => { out[id - 1] = st.t[s]; }); return out; };
 
-function carousel(id) {
-  return `<div class="car" data-id="${id}">${Array.from({ length: SHOES['s' + id] }, (_, n) =>
-    `<img src="${img(id, n + 1)}" alt="Option photo ${n + 1}" ${n ? 'loading="lazy"' : ''}>`).join('')}</div>`;
+// drifting background hearts
+if (!calm) {
+  const sky = document.querySelector('.sky');
+  for (let i = 0; i < 12; i++) {
+    const s = document.createElement('span');
+    const size = 12 + Math.random() * 26;
+    Object.assign(s.style, { left: Math.random() * 100 + '%', width: size + 'px', height: size + 'px',
+      animationDuration: 14 + Math.random() * 16 + 's', animationDelay: -Math.random() * 30 + 's', opacity: .5 + Math.random() * .5 });
+    s.innerHTML = HEART; sky.append(s);
+  }
 }
-function trackCount(car, out) {
-  const upd = () => { out.textContent = `${Math.round(car.scrollLeft / car.clientWidth) + 1} / ${car.children.length} · swipe for more`; };
+
+function carousel(id) {
+  return `<div class="car" data-id="${id}">${Array.from({ length: PICS['s' + id] }, (_, n) =>
+    `<img src="${img(id, n + 1)}" alt="Photo ${n + 1} of ${PICS['s' + id]}" ${n ? 'loading="lazy"' : ''}>`).join('')}</div>`;
+}
+function dots(car, out) {
+  out.innerHTML = [...car.children].map(() => '<i></i>').join('');
+  const upd = () => { const k = Math.round(car.scrollLeft / car.clientWidth); [...out.children].forEach((d, i) => d.classList.toggle('on', i === k)); };
   car.addEventListener('scroll', upd, { passive: true }); upd();
 }
 const preload = (ids) => ids.forEach((id) => [1, 2].forEach((n) => { new Image().src = img(id, n); }));
-const bar = (step, total) => `<div class="bar"><div class="track"><div class="fill" style="width:${step / total * 100}%"></div></div>
-  <span>${step + 1} of ${total}</span><button id="undo" ${st.t.length ? '' : 'disabled'}>↶ Undo</button></div>`;
+function progress(step, total) {
+  const bar = total <= 15
+    ? `<div class="hearts" role="img" aria-label="${step + 1} of ${total}">${Array.from({ length: total }, (_, i) =>
+        HEART.replace('class="h"', `class="h ${i < step ? 'on' : i === step ? 'now' : ''}"`)).join('')}</div>`
+    : `<div class="ribbon" role="img" aria-label="${step + 1} of ${total}"><i style="transform:scaleX(${(step + 1) / total})"></i></div>`;
+  return `<div class="prog">${bar}<button class="undo" id="undo" ${st.t.length ? '' : 'disabled'}>↶ Undo</button></div>`;
+}
+const note = (k) => `<p class="note">${NOTES[k % NOTES.length]} ♡</p>`;
+function burst(el, n = 8) {
+  if (calm || !el) return;
+  const r = el.getBoundingClientRect();
+  for (let i = 0; i < n; i++) {
+    const h = document.createElement('div');
+    h.className = 'float'; h.innerHTML = HEART;
+    const s = 16 + Math.random() * 14;
+    Object.assign(h.style, { width: s + 'px', height: s + 'px', left: r.left + r.width / 2 - s / 2 + (Math.random() - .5) * r.width * .7 + 'px', top: r.top - 4 + 'px', animationDelay: i * 35 + 'ms' });
+    h.style.setProperty('--dx', (Math.random() - .5) * 110 + 'px');
+    h.style.setProperty('--rot', (Math.random() - .5) * 70 + 'deg');
+    document.body.append(h); setTimeout(() => h.remove(), 1500);
+  }
+}
+function shower() {
+  if (calm) return;
+  const colors = ['#e8457a', '#f6a3bf', '#d22f66', '#fbd0de', '#ffffff'];
+  for (let i = 0; i < 46; i++) {
+    const h = document.createElement('div');
+    h.className = 'fall'; h.innerHTML = HEART;
+    const s = 12 + Math.random() * 22;
+    Object.assign(h.style, { width: s + 'px', height: s + 'px', left: Math.random() * 100 + 'vw', color: colors[i % colors.length],
+      animationDuration: 2.2 + Math.random() * 2 + 's', animationDelay: Math.random() * 1.2 + 's' });
+    h.style.setProperty('--dx', (Math.random() - .5) * 120 + 'px');
+    h.style.setProperty('--rot', (Math.random() - .5) * 540 + 'deg');
+    document.body.append(h); setTimeout(() => h.remove(), 5000);
+  }
+}
 const advance = () => { save(); render(); scrollTo(0, 0); };
-const undo = () => { if (st.w.length) st.w.pop(); else { st.t.pop(); st.o2 = null; } advance(); };
+const undo = () => {
+  if (st.w.length) st.w.pop();
+  else if (st.r2 && st.t.length === N) st.r2 = false;
+  else { st.t.pop(); st.o2 = null; st.r2 = false; }
+  advance();
+};
 function wire() {
   app.querySelectorAll('.car').forEach((c) => {
-    trackCount(c, c.parentElement.querySelector('.count'));
+    dots(c, c.parentElement.querySelector('.dots'));
     c.onclick = (e) => e.target.tagName === 'IMG' && zoom(+c.dataset.id, [...c.children].indexOf(e.target));
   });
-  document.getElementById('undo').onclick = undo;
+  document.getElementById('undo')?.addEventListener('click', undo);
 }
 
 function render() {
+  if (!st.go) {
+    app.innerHTML = `<section class="screen" id="welcome">
+      <div class="env-wrap"><button class="env" id="open" aria-label="Open the envelope">
+        <span class="back"></span>
+        <span class="letter"><b>Hi ${NAME} ♡</b><small>I made you something</small></span>
+        <span class="front"></span><span class="to">For Girlfriend Dearest</span>
+        <span class="flap"></span><span class="wax">${HEART}</span></button></div>
+      <p class="tap">tap to open ♡</p>
+      <div class="reveal"><h1>A tiny game, just for you</h1>
+      <p>Two quick rounds, no wrong answers. Just go with your gut, my love.</p>
+      <button class="cta" id="start">Let's play ${HEART}</button></div></section>`;
+    const env = document.getElementById('open');
+    env.onclick = () => {
+      if (env.classList.contains('open')) return;
+      env.classList.add('open'); burst(env.querySelector('.wax'), 12);
+      setTimeout(() => document.getElementById('welcome').classList.add('opened'), calm ? 0 : 700);
+    };
+    document.getElementById('start').onclick = (e) => { burst(e.currentTarget); st.go = true; setTimeout(advance, calm ? 0 : 250); };
+    preload([st.o1[0]]);
+    return;
+  }
   const s1 = st.t.length;
-  if (s1 < N) { // round 1: one shoe at a time
+  if (s1 < N) {
     const id = st.o1[s1];
-    app.innerHTML = `<p class="round">Round 1 of 2</p><h1>Love it or not?</h1><p class="sub">Go with your gut ♡</p>
-      ${bar(s1, N)}
-      <div class="solo">${carousel(id)}<div class="count"></div>
-      <div class="tiers"><button class="pick meh" data-t="2">Not for me</button><button class="pick meh" data-t="1">Maybe</button><button class="pick love" data-t="0">Love it ♡</button></div></div>
-      <p class="hint">Swipe photos · tap a photo to see it bigger</p>`;
-    app.querySelectorAll('.pick').forEach((b) => b.onclick = () => { st.t.push(+b.dataset.t); advance(); });
+    app.innerHTML = `<div class="stage"><div class="head"><p class="step">${HEART} Round 1 of 2</p><h1>${ASK[s1 % ASK.length]}</h1></div>
+      ${progress(s1, N)}
+      <section class="card">${carousel(id)}<div class="dots"></div>
+      <div class="tiers"><button class="pill nope" data-t="2">Not for me</button><button class="pill maybe" data-t="1">Maybe</button><button class="pill love" data-t="0">Love it ${HEART}</button></div></section>
+      ${note(s1)}</div>`;
+    app.querySelectorAll('.tiers .pill').forEach((b) => b.onclick = () => {
+      const card = app.querySelector('.card');
+      if (card.dataset.busy) return;
+      card.dataset.busy = 1;
+      st.t.push(+b.dataset.t);
+      if (b.dataset.t === '0' && !calm) {
+        burst(b, 10);
+        const pop = document.createElement('div'); pop.className = 'pop'; pop.innerHTML = HEART; card.append(pop);
+        setTimeout(() => card.classList.add('out-0'), 330);
+        setTimeout(advance, 540);
+      } else {
+        card.classList.add('out-' + b.dataset.t);
+        setTimeout(advance, calm ? 0 : 200);
+      }
+    });
     wire();
     if (s1 + 1 < N) preload([st.o1[s1 + 1]]);
     return;
   }
   const ps = pairs(finalists(tiersById()));
   if (!st.o2) { st.o2 = shuffle(ps.map((_, k) => ({ k, flip: Math.random() < 0.5 }))); save(); }
+  const side = (s) => { const [a, b] = ps[st.o2[s].k]; return st.o2[s].flip ? [b, a] : [a, b]; };
+  if (!st.r2) {
+    const loves = st.t.filter((t) => t === 0).length;
+    app.innerHTML = `<section class="screen">
+      <div class="big-heart">${HEART}</div>
+      <h1>Ooh, good taste!</h1>
+      ${loves ? `<div class="loved" aria-label="You loved ${loves}">${Array.from({ length: loves }, (_, i) => HEART.replace('<svg', `<svg style="animation-delay:${300 + i * 80}ms"`)).join('')}</div>
+      <p>You loved ${loves === 1 ? 'one' : loves}. Now your favourites go head to head, ${ps.length} quick picks and you're done.</p>`
+      : `<p>Picky, I like it. Now a few go head to head, ${ps.length} quick picks and you're done.</p>`}
+      <button class="cta" id="next">Next round ${HEART}</button>
+      <button class="link" id="undo">↶ Change my last answer</button></section>`;
+    document.getElementById('next').onclick = (e) => { burst(e.currentTarget); st.r2 = true; setTimeout(advance, calm ? 0 : 250); };
+    document.getElementById('undo').onclick = undo;
+    preload(side(0));
+    return;
+  }
   const s2 = st.w.length;
   if (s2 === ps.length) return finish(ps);
-  const side = (s) => { const [a, b] = ps[st.o2[s].k]; return st.o2[s].flip ? [b, a] : [a, b]; };
-  app.innerHTML = `<p class="round">Round 2 of 2 · just your favourites</p><h1>Pick one – go with your gut</h1><p class="sub">No wrong answers ♡</p>
-    ${bar(s2, ps.length)}
+  app.innerHTML = `<div class="stage"><div class="head"><p class="step">${HEART} Round 2 of 2</p><h1>${s2 === ps.length - 1 ? 'Last one, which?' : `Which one, ${NAME}?`}</h1></div>
+    ${progress(s2, ps.length)}
     <div class="duel">${side(s2).map((id) => `
-      <div class="opt">${carousel(id)}<div class="count"></div>
-      <button class="pick" data-id="${id}">This one ♡</button></div>`).join('')}</div>
-    <p class="hint">Swipe photos · tap a photo to see it bigger</p>`;
-  app.querySelectorAll('.pick').forEach((b) => b.onclick = () => { st.w.push(+b.dataset.id); advance(); });
+      <section class="card">${carousel(id)}<div class="dots"></div>
+      <button class="pill" data-id="${id}">This one ${HEART}</button></section>`).join('')}</div>
+    <p class="sub" style="text-align:center;margin-top:12px">Swipe the photos, tap one to see it bigger</p>
+    ${note(s2 + 1)}</div>`;
+  app.querySelectorAll('.duel .pill').forEach((b) => b.onclick = () => {
+    if (app.dataset.busy) return;
+    app.dataset.busy = 1;
+    app.querySelectorAll('.duel .card').forEach((c) => c.classList.add(c.contains(b) ? 'chosen' : 'lost'));
+    burst(b);
+    st.w.push(+b.dataset.id);
+    setTimeout(() => { delete app.dataset.busy; advance(); }, calm ? 0 : 320);
+  });
   wire();
   if (s2 + 1 < ps.length) preload(side(s2 + 1));
 }
@@ -128,7 +370,7 @@ function zoom(id, at) {
   c.querySelectorAll('img').forEach((i) => i.removeAttribute('loading'));
   z.classList.add('on');
   c.scrollLeft = at * c.clientWidth;
-  trackCount(c, z.querySelector('.count'));
+  dots(c, z.querySelector('.dots'));
 }
 z.querySelector('.x').onclick = () => z.classList.remove('on');
 
@@ -136,16 +378,21 @@ function finish(ps) {
   const byPair = new Array(ps.length);
   st.o2.forEach(({ k }, s) => { byPair[k] = st.w[s]; });
   const code = encode(tiersById(), byPair);
-  app.innerHTML = `<div class="done">
-    <h1>All done! ♡</h1><p>Thank you. Send this little code back to me:</p>
-    <div class="code">${code}</div>
-    <button class="btn primary" id="copy">Copy code</button>
-    <a class="btn secondary" href="https://wa.me/?text=${encodeURIComponent('Done! My code: ' + code)}" target="_blank" rel="noopener">Send on WhatsApp</a>
-    <button class="btn" id="undo" style="color:var(--pink)">↶ Undo last pick</button></div>`;
+  app.innerHTML = `<section class="screen">
+    <h1>All done, ${NAME}!</h1>
+    <p>You were perfect, as always. Now send this little sealed code back to me.</p>
+    <div class="envelope"><div class="seal">${HEART}</div>
+      <div class="code" id="code">${code}</div><p class="code-note">sealed with a kiss</p></div>
+    <button class="cta" id="copy">Copy code</button>
+    <a class="cta alt" href="https://wa.me/?text=${encodeURIComponent('Done! ♡ My code: ' + code)}" target="_blank" rel="noopener">Send it on WhatsApp ${HEART}</a>
+    <p class="sign">love you lots,<br>idiot ♡</p>
+    <button class="link" id="undo">↶ Undo last pick</button></section>`;
+  if (!st.showered) { shower(); st.showered = true; save(); }
   document.getElementById('copy').onclick = async (e) => {
-    try { await navigator.clipboard.writeText(code); e.target.textContent = 'Copied ✓'; } catch { e.target.textContent = 'Long-press the code to copy'; }
+    const b = e.currentTarget;
+    try { await navigator.clipboard.writeText(code); b.textContent = 'Copied ♡'; burst(b); } catch { b.textContent = 'Long-press the code to copy'; }
   };
-  document.getElementById('undo').onclick = undo;
+  document.getElementById('undo').onclick = () => { st.showered = false; undo(); };
   if (FORM_URL && st.sent !== code) fetch(FORM_URL, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) })
     .then((r) => { if (r.ok) { st.sent = code; save(); } }).catch(() => {});
 }
